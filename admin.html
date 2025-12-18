@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة | كُتبي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Tajawal', sans-serif; }</style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-gray-900 text-white p-4 shadow-xl">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-black">Control Panel / الإدارة</h1>
+            <a href="index.html" class="text-sm bg-gray-700 px-4 py-2 rounded-lg">العودة للموقع</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-indigo-500">
+                <p class="text-gray-500 text-sm">إجمالي الكتب</p>
+                <h3 id="stat-books" class="text-3xl font-black">0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-green-500">
+                <p class="text-gray-500 text-sm">عمليات البيع</p>
+                <h3 class="text-3xl font-black">مفعل</h3>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-r-4 border-red-500">
+                <p class="text-gray-500 text-sm">بلاغات</p>
+                <h3 class="text-3xl font-black">0</h3>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-gray-800">إدارة المحتوى المعروض</h2>
+                <button onclick="loadAdminData()" class="text-indigo-600 font-bold text-sm underline">تحديث البيانات</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right">
+                    <thead class="bg-gray-50 text-gray-500 text-sm">
+                        <tr>
+                            <th class="p-4">الكتاب</th>
+                            <th class="p-4">المعلن</th>
+                            <th class="p-4">السعر</th>
+                            <th class="p-4">التاريخ</th>
+                            <th class="p-4">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body" class="divide-y divide-gray-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // دالة مخصصة للأدمن فقط
+        async function loadAdminData() {
+            const { data: books, error } = await _supabase
+                .from('books')
+                .select('*, profiles:owner_id (full_name)')
+                .order('created_at', { ascending: false });
+
+            if (error) return alert("خطأ في جلب البيانات");
+
+            document.getElementById('stat-books').innerText = books.length;
+            const tbody = document.getElementById('admin-table-body');
+            
+            tbody.innerHTML = books.map(book => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-bold text-gray-700">${book.title}</td>
+                    <td class="p-4 text-gray-500 text-sm">${book.profiles?.full_name || 'مجهول'}</td>
+                    <td class="p-4 font-mono">${book.price || 'تبديل'}</td>
+                    <td class="p-4 text-xs text-gray-400">${new Date(book.created_at).toLocaleDateString('ar-EG')}</td>
+                    <td class="p-4">
+                        <button onclick="deleteBook(${book.id})" class="text-red-500 hover:bg-red-50 px-3 py-1 rounded-lg font-bold text-xs transition">حذف الإعلان</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteBook(id) {
+            if (confirm('هل أنت متأكد من حذف هذا الكتاب نهائياً؟')) {
+                const { error } = await _supabase.from('books').delete().eq('id', id);
+                if (error) alert("فشل الحذف");
+                else loadAdminData();
+            }
+        }
+
+        window.onload = loadAdminData;
+    </script>
+</body>
+</html>
