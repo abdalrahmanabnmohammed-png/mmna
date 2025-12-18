@@ -3,75 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>كُتبي - منصة تبادل الكتب الجامعية</title>
+    <title>كُتبي | المنصة الجامعية الأولى</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* إضافة لمسة جمالية للخطوط العربية */
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-        body { font-family: 'Tajawal', sans-serif; }
+        body { font-family: 'Tajawal', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .gradient-text { background: linear-gradient(90deg, #4f46e5, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-[#f8fafc]">
 
-    <nav class="bg-indigo-700 text-white p-4 shadow-xl sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">📚</span>
-                <h1 class="text-2xl font-bold tracking-tight">كُتبي الجامعي</h1>
+    <nav class="glass sticky top-0 z-50 border-b border-gray-200">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2 rounded-xl shadow-lg">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <h1 class="text-2xl font-black gradient-text uppercase tracking-tighter">كُتبي</h1>
             </div>
-            <div class="flex items-center gap-6">
-                <a href="index.html" class="hover:text-indigo-200 transition">الرئيسية</a>
-                <button id="auth-nav-btn" onclick="window.location.href='auth.html'" class="bg-indigo-800 px-4 py-2 rounded-lg hover:bg-indigo-900 transition">دخول</button>
+            <div class="flex items-center gap-4">
+                <button id="auth-nav-btn" class="bg-indigo-50 text-indigo-700 px-5 py-2 rounded-full font-bold hover:bg-indigo-100 transition-all text-sm">جاري التحميل..</button>
             </div>
         </div>
     </nav>
 
-    <div class="container mx-auto p-6 text-center">
+    <header class="bg-white border-b border-gray-100 py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">سوق الكتب والدوسيات <br><span class="text-indigo-600">لطلاب الجامعات</span></h2>
+            <p class="text-gray-500 max-w-2xl mx-auto text-lg mb-8">وفر مالك، تبادل معرفتك، وساعد زملائك في الحصول على المراجع الدراسية بأفضل الأسعار.</p>
+            
+            <div class="flex flex-col md:flex-row gap-3 max-w-4xl mx-auto bg-gray-50 p-3 rounded-2xl shadow-inner">
+                <input type="text" id="searchInput" onkeyup="filterBooks()" placeholder="ابحث عن مادة، تخصص، أو اسم كتاب..." class="flex-1 p-4 rounded-xl border-0 ring-1 ring-gray-200 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                <select id="categoryFilter" onchange="filterBooks()" class="p-4 rounded-xl bg-white border-0 ring-1 ring-gray-200 outline-none font-bold text-gray-600">
+                    <option value="all">كل التخصصات</option>
+                    <option value="هندسة">هندسة</option>
+                    <option value="طب">علوم طبية</option>
+                    <option value="آداب">آداب ولغات</option>
+                    <option value="دوسية">دوسيات وملخصات</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        <div id="user-actions" class="mb-12"></div>
+
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-2xl font-bold text-gray-800">المعروض حديثاً</h3>
+            <span id="book-count" class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-bold">0 كتب</span>
+        </div>
         
-        <div id="user-actions" class="py-12 bg-white rounded-3xl shadow-sm border border-gray-100 mb-10 transition-all">
-            <div class="animate-pulse flex flex-col items-center">
-                <div class="h-4 bg-gray-200 rounded w-48 mb-4"></div>
-                <div class="h-10 bg-gray-200 rounded w-64"></div>
+        <div id="books-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             </div>
-            <p class="text-gray-500 mt-4">جاري التحقق من حالة الحساب...</p>
-        </div>
+    </main>
 
-        <div class="flex items-center my-10">
-            <div class="flex-grow h-px bg-gray-200"></div>
-            <span class="px-4 text-gray-400 font-bold text-sm">آخر الكتب والدوسيات المعروضة</span>
-            <div class="flex-grow h-px bg-gray-200"></div>
+    <footer class="bg-white border-t border-gray-200 py-10 mt-20">
+        <div class="container mx-auto px-6 text-center text-gray-400 text-sm">
+            <p>© 2025 منصة كُتبي - صنع بكل حب لطلاب الجامعات</p>
         </div>
+    </footer>
 
-        <div id="books-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
-    </div>
-
-    <div id="chat-box" class="fixed bottom-0 left-6 w-80 bg-white shadow-2xl rounded-t-2xl hidden flex flex-col border border-indigo-100 z-50">
-        <div class="bg-indigo-600 text-white p-4 rounded-t-2xl flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-400 rounded-full"></div>
-                <span id="chat-with" class="font-bold text-sm text-truncate">المحادثة</span>
-            </div>
-            <button onclick="toggleChat()" class="text-white hover:text-gray-200">✕</button>
+    <div id="chat-box" class="fixed bottom-6 left-6 w-96 glass shadow-2xl rounded-2xl hidden flex flex-col border border-indigo-100 overflow-hidden transition-all duration-500 scale-95 z-[100]">
         </div>
-        <div id="messages" class="h-80 overflow-y-auto p-4 space-y-3 bg-gray-50 flex flex-col">
-            <p class="text-center text-xs text-gray-400 mt-10">ابدأ المحادثة الآن بخصوص الكتاب</p>
-        </div>
-        <div class="p-3 border-t bg-white flex items-center gap-2">
-            <input type="text" id="msg-input" placeholder="اكتب رسالتك هنا..." class="flex-1 p-2 bg-gray-100 rounded-lg outline-none text-sm focus:ring-2 focus:ring-indigo-500">
-            <button onclick="sendMessage()" class="bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 transition">
-                🚀
-            </button>
-        </div>
-    </div>
 
     <script src="app.js"></script>
-    <script>
-        // تشغيل الوظائف عند فتح الصفحة
-        window.onload = function() {
-            displayBooks();
-        };
-    </script>
 </body>
 </html>
