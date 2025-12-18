@@ -1,1 +1,29 @@
-
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>إضافة كتاب جديد</title>
+</head>
+<body>
+    <nav><a href="index.html">العودة للرئيسية</a></nav>
+    <div class="container">
+        <div class="card">
+            <h2>عرض كتاب أو دوسية للبيع/التبادل</h2>
+            <form id="addBookForm">
+                <input type="text" id="title" placeholder="اسم الكتاب أو المادة" required>
+                <input type="number" id="price" placeholder="السعر (اتركه فارغاً للتبادل)">
+                <select id="type">
+                    <option value="بيع">بيع</option>
+                    <option value="تبديل">تبديل</option>
+                </select>
+                <textarea id="description" placeholder="وصف الحالة (مثلاً: نظيف جداً، مكتوب عليه..)"></textarea>
+                <button type="submit" class="btn">انشر الآن</button>
+            </form>
+        </div>
+    </div>
+    <script src="app.js"></script>
+    <script>document.getElementById('addBookForm').onsubmit = addBook;</script>
+</body>
+</html>
