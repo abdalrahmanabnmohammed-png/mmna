@@ -169,3 +169,16 @@ function getEmoji(cat) {
 
 // تشغيل التطبيق
 window.onload = initializeApp;
+
+// وظيفة حماية صفحة الأدمن
+async function checkAdminAccess() {
+    const { data: { user } } = await _supabase.auth.getUser();
+    
+    // هنا نضع بريدك الإلكتروني (أنت المدير)
+    const adminEmail = "abdqw472@gmail.com"; 
+
+    if (!user || user.email !== adminEmail) {
+        alert("عذراً، هذه المنطقة مخصصة للإدارة فقط!");
+        window.location.href = "index.html";
+    }
+}
