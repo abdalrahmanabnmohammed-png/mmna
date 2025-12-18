@@ -1,1 +1,22 @@
-
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>سوق الكتب الجامعي</title>
+</head>
+<body>
+    <nav>
+        <a href="index.html">الرئيسية</a>
+        <a href="add-book.html">أضف كتاب/دوسية</a>
+        <a href="auth.html">دخول / تسجيل</a>
+    </nav>
+    <div class="container">
+        <h1>الكتب المتاحة حالياً</h1>
+        <div id="books-list" class="card">جاري تحميل الكتب...</div>
+    </div>
+    <script src="app.js"></script>
+    <script>window.onload = displayBooks;</script>
+</body>
+</html>
